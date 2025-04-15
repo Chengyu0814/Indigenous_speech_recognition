@@ -4,10 +4,8 @@ import tempfile
 import requests
 import xml.etree.ElementTree as ET
 import json
-from azure.ai.inference import ChatCompletionsClient
-from azure.ai.inference.models import SystemMessage
-from azure.ai.inference.models import UserMessage
-from azure.core.credentials import AzureKeyCredential
+from groq import Groq
+
 
 def audio_to_dialect_text(path, dialect):
     """
@@ -80,32 +78,28 @@ def diatest_to_token(result , dialect): # 把羅馬拼音轉成中文token(陣�
     
 def token_to_sentence(sub_list): # 把中文token轉成句子
 
-    token = "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"  #Github token
-    client = ChatCompletionsClient(
-        endpoint="https://models.inference.ai.azure.com",
-        credential=AzureKeyCredential(token),
+    client = Groq(api_key="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")
+    completion = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[{"role": "user", 
+                "content":"""你好，可以幫我把以下list轉換成一個你覺得比較合理的句子嗎？是由不同小list組成，可以在各個小list中選擇一個你覺得比較合理的單字，
+                        並且把這些句子組成一個你覺得比較合理的句子嗎，你可以自行更改順序或選擇不用哪些單字也可以自行改成你覺得更合理的句子，
+                        像是example_list = [ ['你好', '哈囉', '嗨'], ['朋友', '你', '你們'], ['學校', '這裡', '教室'], ['今天', '現在', '此刻'], ['要做什麼', '要去哪裡', '打算做什麼'], ['語助詞', '主格標記', 'undefined'] ]，則可以生成 ： 嗨 你今天在學校要做什麼？，
+                        請幫我回傳你覺得最合理的句子，並且只需要回傳句子就行了，不用多做任何說明，以下是list：""" + str(sub_list)}],
+        temperature=1,
+        max_completion_tokens=1024,
+        top_p=1,
+        stream=True,
+        stop=None,
     )
 
-    response = client.complete(
-        messages=[
-            SystemMessage(""""""),
-            UserMessage(
-                """你好，可以幫我把以下list轉換成一個你覺得比較合理的句子嗎？是由不同小list組成，可以在各個小list中選擇一個你覺得比較合理的單字，
-                    並且把這些句子組成一個你覺得比較合理的句子嗎，你可以自行更改順序或選擇不用哪些單字也可以自行改成你覺得更合理的句子，
-                    像是example_list = [ ['你好', '哈囉', '嗨'], ['朋友', '你', '你們'], ['學校', '這裡', '教室'], ['今天', '現在', '此刻'], ['要做什麼', '要去哪裡', '打算做什麼'], ['語助詞', '主格標記', 'undefined'] ]，則可以生成 ： 嗨 你今天在學校要做什麼？，
-                    請幫我回傳你覺得最合理的句子，並且只需要回傳句子就行了，不用多做任何說明，以下是list：""" + str(sub_list)
-
-                        ),
-        ],
-        model="Llama-3.3-70B-Instruct",
-        temperature=0.8,
-        max_tokens=2048,
-        top_p=0.1
-    )
 
     # 解析與輸出
     try:
-        result = response.choices[0].message.content
-        return result
+        response_text = ""
+        for chunk in completion:
+            response_text += chunk.choices[0].delta.content or ""
+
+        return response_text
     except Exception as e:
         return "❌ 模型發生錯誤"
