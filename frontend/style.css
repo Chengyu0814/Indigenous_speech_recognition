@@ -1,0 +1,116 @@
+body {
+    font-family: sans-serif;
+    max-width: 600px;
+    margin: 2em auto;
+    padding: 1em;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+h1, h2 {
+    text-align: center;
+    color: #333;
+}
+
+.form-group {
+    margin-bottom: 1.5em;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5em;
+    font-weight: bold;
+}
+
+input[type="file"], select {
+    width: 100%;
+    padding: 0.8em;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* 重要：讓 padding 不會增加寬度 */
+}
+
+button[type="submit"] {
+    display: block;
+    width: 100%;
+    padding: 1em;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+button[type="submit"]:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+
+#result, #loading, #error {
+    margin-top: 2em;
+    padding: 1em;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #fff;
+}
+
+#result h2, #error h2 {
+    margin-top: 0;
+    color: #555;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.5em;
+}
+
+#result pre {
+    white-space: pre-wrap; /* 自動換行 */
+    word-wrap: break-word; /* 斷詞 */
+    background-color: #f0f0f0;
+    padding: 0.8em;
+    border-radius: 4px;
+    max-height: 300px; /* 限制最大高度，可捲動 */
+    overflow-y: auto;
+}
+
+#result code {
+    font-family: monospace;
+    font-size: 1.1em;
+    color: #333;
+}
+
+.error-message {
+    color: #dc3545; /* 紅色 */
+    font-size: 0.9em;
+    margin-top: 0.3em;
+    display: block; /* 確保獨佔一行 */
+}
+
+.hidden {
+    display: none;
+}
+
+/* Loading Spinner */
+#loading {
+    text-align: center;
+}
+.spinner {
+  border: 4px solid #f3f3f3; /* Light grey */
+  border-top: 4px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+  margin: 1em auto; /* 置中 */
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

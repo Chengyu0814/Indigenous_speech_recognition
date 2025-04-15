@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>原住民族語音辨識</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1>原住民族語音辨識</h1>
+
+    <form id="uploadForm">
+        <div class="form-group">
+            <label for="audioFile">選擇 MP3 音檔:</label>
+            <input type="file" id="audioFile" name="audio_file" accept=".mp3" required>
+            <span id="fileError" class="error-message"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="dialectSelect">選擇語言:</label>
+            <select id="dialectSelect" name="dialect" required>
+                <option value="ami">阿美語 (Amis)</option>
+                <option value="sdq">賽德克語 (Seediq)</option>
+                <option value="trv">太魯閣語 (Truku)</option>
+            </select>
+        </div>
+
+        <button type="submit" id="submitButton">開始辨識</button>
+    </form>
+
+    <div id="loading" class="hidden">
+        <p>處理中，請稍候...</p>
+        <div class="spinner"></div>
+    </div>
+
+    <div id="result" class="hidden">
+        <h2>辨識結果:</h2>
+        <pre><code id="transcriptionText"></code></pre>
+    </div>
+
+    <div id="error" class="error-message hidden">
+        <h2>錯誤:</h2>
+        <p id="errorMessage"></p>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
