@@ -2,7 +2,6 @@ import os
 import uuid # 用來產生唯一的檔案名稱
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS # 引入 CORS
-from gradio_client import Client, handle_file
 import tempfile # 使用 tempfile 模組更安全地處理暫存檔案
 from processor_main import audio_to_dialect_text , diatest_to_token , token_to_sentence
 
