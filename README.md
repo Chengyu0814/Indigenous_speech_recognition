@@ -19,7 +19,7 @@
 
 ### 1. 複製專案
 ```bash
-git clone https://github.com/你的用戶名/Indigenous_speech_recognition.git
+git clone https://github.com/Chengyu0814/Indigenous_speech_recognition.git
 cd Indigenous_speech_recognition
 ```
 
