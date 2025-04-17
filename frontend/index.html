@@ -12,9 +12,28 @@
 
     <form id="uploadForm">
         <div class="form-group">
-            <label for="audioFile">選擇 MP3 音檔:</label>
-            <input type="file" id="audioFile" name="audio_file" accept=".mp3" required>
-            <span id="fileError" class="error-message"></span>
+            <h3>選擇辨識方式:</h3>
+            <div class="input-methods">
+                <div id="fileUploadSection">
+                    <label for="audioFile">上傳 MP3 音檔:</label>
+                    <input type="file" id="audioFile" name="audio_file" accept=".mp3">
+                    <span id="fileError" class="error-message"></span>
+                </div>
+
+                <div class="divider">或</div>
+
+                <div id="recordSection">
+                    <label>使用麥克風錄音:</label>
+                    <div class="record-controls">
+                        <button type="button" id="recordButton" class="record-btn">開始錄音</button>
+                        <button type="button" id="stopButton" class="record-btn" disabled>停止錄音</button>
+                        <div id="recordingStatus" class="hidden">錄音中... <span id="recordingTime">0:00</span></div>
+                        <div id="audioPreview" class="hidden">
+                            <audio id="recordedAudio" controls></audio>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="form-group">

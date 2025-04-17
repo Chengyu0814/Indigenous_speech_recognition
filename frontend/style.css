@@ -114,3 +114,100 @@ button[type="submit"]:disabled {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+/* 新增錄音相關樣式 */
+.input-methods {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.divider {
+    text-align: center;
+    font-weight: bold;
+    color: #555;
+    margin: 10px 0;
+}
+
+.record-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.record-btn {
+    padding: 8px 15px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+#recordButton {
+    background-color: #e74c3c;
+    color: white;
+}
+
+#recordButton:hover {
+    background-color: #c0392b;
+}
+
+#stopButton {
+    background-color: #3498db;
+    color: white;
+}
+
+#stopButton:hover {
+    background-color: #2980b9;
+}
+
+#stopButton:disabled {
+    background-color: #95a5a6;
+    cursor: not-allowed;
+}
+
+#recordingStatus {
+    display: flex;
+    align-items: center;
+    color: #e74c3c;
+    font-weight: bold;
+    animation: blink 1.5s infinite;
+    margin: 10px 0;
+}
+
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+#audioPreview {
+    width: 100%;
+    margin-top: 10px;
+}
+
+#audioPreview audio {
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .input-methods {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+    
+    .divider {
+        margin: 0 20px;
+        display: flex;
+        align-items: center;
+        height: 100%;
+    }
+    
+    #fileUploadSection, #recordSection {
+        flex: 1;
+    }
+}

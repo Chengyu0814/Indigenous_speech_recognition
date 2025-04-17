@@ -9,9 +9,111 @@ const errorDiv = document.getElementById('error');
 const errorMessage = document.getElementById('errorMessage');
 const fileErrorSpan = document.getElementById('fileError');
 
+// 新增錄音相關元素
+const recordButton = document.getElementById('recordButton');
+const stopButton = document.getElementById('stopButton');
+const recordingStatus = document.getElementById('recordingStatus');
+const recordingTime = document.getElementById('recordingTime');
+const audioPreview = document.getElementById('audioPreview');
+const recordedAudio = document.getElementById('recordedAudio');
+
 // --- 後端 API 的 URL ---
 // 如果你的後端運行在不同的主機或端口，請修改這裡
 const BACKEND_URL = 'http://localhost:5000/transcribe'; // 或者 http://<你的後端IP>:5000/transcribe
+
+// --- 錄音相關變數 ---
+let mediaRecorder;
+let audioChunks = [];
+let recordingStartTime;
+let recordingTimer;
+let audioBlob;
+
+// --- 檢查瀏覽器是否支援錄音API ---
+function checkMicrophoneSupport() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        console.error('瀏覽器不支援錄音功能');
+        recordButton.disabled = true;
+        recordButton.textContent = '瀏覽器不支援錄音';
+        // 顯示友好的錯誤訊息
+        const recordSection = document.getElementById('recordSection');
+        const errorMsg = document.createElement('p');
+        errorMsg.className = 'error-message';
+        errorMsg.textContent = '您的瀏覽器不支援錄音功能。請使用最新版的Chrome、Firefox或Safari瀏覽器。';
+        recordSection.appendChild(errorMsg);
+    }
+}
+
+// --- 開始錄音 ---
+recordButton.addEventListener('click', async () => {
+    audioChunks = [];
+    
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        
+        mediaRecorder.ondataavailable = (event) => {
+            if (event.data.size > 0) {
+                audioChunks.push(event.data);
+            }
+        };
+        
+        mediaRecorder.onstop = () => {
+            // 停止計時器
+            clearInterval(recordingTimer);
+            
+            // 將錄音片段合併成一個blob
+            audioBlob = new Blob(audioChunks, { type: 'audio/mpeg' });
+            
+            // 建立URL並顯示音頻控制器
+            const audioUrl = URL.createObjectURL(audioBlob);
+            recordedAudio.src = audioUrl;
+            
+            // 顯示音頻預覽
+            audioPreview.classList.remove('hidden');
+            recordingStatus.classList.add('hidden');
+        };
+        
+        // 開始錄音
+        mediaRecorder.start();
+        
+        // 更新UI
+        recordButton.disabled = true;
+        stopButton.disabled = false;
+        recordingStatus.classList.remove('hidden');
+        audioPreview.classList.add('hidden');
+        
+        // 開始計時
+        recordingStartTime = Date.now();
+        updateRecordingTime();
+        recordingTimer = setInterval(updateRecordingTime, 1000);
+        
+    } catch (error) {
+        console.error('獲取麥克風權限失敗:', error);
+        alert('無法訪問麥克風。請確保您已授予麥克風訪問權限，並且沒有其他應用程式正在使用麥克風。');
+    }
+});
+
+// --- 停止錄音 ---
+stopButton.addEventListener('click', () => {
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+        
+        // 停止所有音軌
+        mediaRecorder.stream.getTracks().forEach(track => track.stop());
+        
+        // 更新UI
+        recordButton.disabled = false;
+        stopButton.disabled = true;
+    }
+});
+
+// --- 更新錄音時間 ---
+function updateRecordingTime() {
+    const elapsedTime = Math.floor((Date.now() - recordingStartTime) / 1000);
+    const minutes = Math.floor(elapsedTime / 60);
+    const seconds = elapsedTime % 60;
+    recordingTime.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+}
 
 form.addEventListener('submit', async (event) => {
     event.preventDefault(); // 阻止表單的默認提交行為
@@ -26,27 +128,42 @@ form.addEventListener('submit', async (event) => {
     // --- 獲取表單數據 ---
     const audioFile = audioFileInput.files[0];
     const selectedDialect = dialectSelect.value;
-
-    // --- 基本前端驗證 ---
-    if (!audioFile) {
-        fileErrorSpan.textContent = '請選擇一個 MP3 檔案。';
-        loadingDiv.classList.add('hidden');
-        submitButton.disabled = false;
-        return;
-    }
-
-    if (!audioFile.name.toLowerCase().endsWith('.mp3')) {
-        fileErrorSpan.textContent = '僅支援 MP3 格式的檔案。';
-        loadingDiv.classList.add('hidden');
-        submitButton.disabled = false;
-        return;
-    }
-
+    
     // --- 準備 FormData ---
-    // FormData 用於將檔案和其它表單欄位打包發送到後端
     const formData = new FormData();
-    formData.append('audio_file', audioFile); // 'audio_file' 必須和後端 app.py 中 request.files 的 key 一致
     formData.append('dialect', selectedDialect); // 'dialect' 必須和後端 app.py 中 request.form 的 key 一致
+
+    // --- 檢查輸入來源: 文件上傳或錄音 ---
+    let audioSource = null;
+    
+    if (audioFile) {
+        // 使用上傳的文件
+        audioSource = audioFile;
+        
+        // 基本前端驗證
+        if (!audioFile.name.toLowerCase().endsWith('.mp3')) {
+            fileErrorSpan.textContent = '僅支援 MP3 格式的檔案。';
+            loadingDiv.classList.add('hidden');
+            submitButton.disabled = false;
+            return;
+        }
+    } else if (audioBlob) {
+        // 使用錄音，添加檔案名稱屬性
+        // 創建一個新的 File 物件，從錄音的 Blob 轉換，並添加 .mp3 副檔名
+        audioSource = new File([audioBlob], "recorded_audio.mp3", { 
+            type: "audio/mpeg", 
+            lastModified: new Date().getTime() 
+        });
+    } else {
+        // 沒有音頻源
+        fileErrorSpan.textContent = '請選擇一個 MP3 檔案或使用麥克風錄音。';
+        loadingDiv.classList.add('hidden');
+        submitButton.disabled = false;
+        return;
+    }
+    
+    // 添加選擇的音頻源到 FormData
+    formData.append('audio_file', audioSource);
 
     // --- 發送請求到後端 ---
     try {
@@ -103,3 +220,6 @@ form.addEventListener('submit', async (event) => {
 audioFileInput.addEventListener('change', () => {
     fileErrorSpan.textContent = '';
 });
+
+// 頁面載入時檢查麥克風支援
+document.addEventListener('DOMContentLoaded', checkMicrophoneSupport);
