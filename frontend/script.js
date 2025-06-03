@@ -1,3 +1,32 @@
+// --- 翻譯紀錄功能 ---
+const historyList = document.getElementById('historyList');
+let translationHistory = [];
+
+function getDialectLabel(dialect) {
+    switch (dialect) {
+        case 'ami': return '阿美';
+        case 'sdq': return '賽德克';
+        case 'trv': return '太魯閣';
+        default: return dialect;
+    }
+}
+
+function addToHistory(text, dialect) {
+    if (!text || typeof text !== 'string' || !text.trim()) return;
+    const label = getDialectLabel(dialect);
+    translationHistory.unshift({ text: text.trim(), dialect: label });
+    if (translationHistory.length > 10) translationHistory = translationHistory.slice(0, 10);
+    renderHistory();
+}
+
+function renderHistory() {
+    historyList.innerHTML = '';
+    translationHistory.forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = `[${item.dialect}] ${item.text}`;
+        historyList.appendChild(li);
+    });
+}
 const form = document.getElementById('uploadForm');
 const audioFileInput = document.getElementById('audioFile');
 const dialectSelect = document.getElementById('dialectSelect');
@@ -196,6 +225,7 @@ form.addEventListener('submit', async (event) => {
             // 成功，顯示結果
             transcriptionText.textContent = data.transcription;
             resultDiv.classList.remove('hidden');
+            addToHistory(data.transcription, dialectSelect.value);
         } else if (data.error) {
             // 後端回報了業務邏輯上的錯誤 (雖然狀態碼是 200 OK，但包含 error 欄位)
              throw new Error(data.error);

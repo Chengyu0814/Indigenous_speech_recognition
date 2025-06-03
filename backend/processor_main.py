@@ -7,24 +7,20 @@ import json
 from groq import Groq
 
 
-def audio_to_dialect_text(path, dialect):
+def audio_to_dialect_text(path):
     """
-    使用 Gradio Client 呼叫外部 API 進行語音轉文字。
-
     Args:
         path (str): 音檔的路徑。
-        dialect (str): 方言選擇 ('ami', 'sdq', 'trv')。
-
     Returns:
         str: 辨識出的文字結果，或發生錯誤時回傳 None 或錯誤訊息。
     """
     try:
         client = Client("https://sapolita.ithuan.tw/")
         result = client.predict(
-            model_id="whisper-large-v3_iso-prompt",
-            dialect_id=dialect,
-            audio_file=handle_file(path),
-            api_name="/predict"
+                model_id="whisper-large-v2-all",
+                dialect_id="test",
+                audio_file=handle_file(path),
+                api_name="/predict"
         )
         return result
     except Exception as e:
@@ -86,7 +82,7 @@ def token_to_sentence(sub_list): # 把中文token轉成句子
                         並且把這些句子組成一個你覺得比較合理的句子嗎，你可以自行更改順序或選擇不用哪些單字也可以自行改成你覺得更合理的句子，
                         像是example_list = [ ['你好', '哈囉', '嗨'], ['朋友', '你', '你們'], ['學校', '這裡', '教室'], ['今天', '現在', '此刻'], ['要做什麼', '要去哪裡', '打算做什麼'], ['語助詞', '主格標記', 'undefined'] ]，則可以生成 ： 嗨 你今天在學校要做什麼？，
                         請幫我回傳你覺得最合理的句子，並且只需要回傳句子就行了，不用多做任何說明，以下是list：""" + str(sub_list)}],
-        temperature=1,
+        temperature=0,
         max_completion_tokens=1024,
         top_p=1,
         stream=True,

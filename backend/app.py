@@ -44,7 +44,8 @@ def transcribe_audio():
         print(f"Temporary file saved at: {temp_file_path}") 
 
         # 呼叫核心處理函數
-        transcription_result = audio_to_dialect_text(temp_file_path, dialect) # 把原住民語音轉成羅馬拼音
+        transcription_result = audio_to_dialect_text(temp_file_path) # 把原住民語音轉成羅馬拼音
+        print(transcription_result)
         if transcription_result is None or "Error" in str(transcription_result):
             return jsonify({"error": f"Transcription failed: {transcription_result}"}), 500
 

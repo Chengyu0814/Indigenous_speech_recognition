@@ -1,0 +1,6 @@
+# 忽略 macOS 系統檔案
+.DS_Store
+
+# 忽略 Python 編譯產生的快取檔
+__pycache__/
+*.pyc
