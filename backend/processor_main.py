@@ -64,8 +64,11 @@ def diatest_to_token(result , dialect): # 把羅馬拼音轉成中文token(陣�
         language_num = 15
     elif dialect == "trv":
         language_num = 33
+
+    sentence = result.replace(",", " ").replace("。", " ").replace("?", " ").replace("!", " ").replace(".", " ")
+    sentence = sentence.split()
+    print(sentence)
     
-    sentence = result.split()
     list_total = []
     for word in sentence:
         list_total.append(vocab_search(language_num,word))
