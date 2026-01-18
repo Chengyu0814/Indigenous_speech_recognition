@@ -44,6 +44,14 @@ cd backend
 pip install -r requirements.txt
 ```
 
+#### 輸入API KEY
+請到 [Groq Console](https://console.groq.com/keys) 申請一組 API KEY
+```bash
+ API KEY 輸入至 backend/processor_main.py 的     
+client = Groq(api_key="GROQ_API_KEY")
+"GROQ_API_KEY" 這一段 (需包含引號)
+```
+
 #### 啟動後端服務
 ```bash
 # 在 backend 目錄下執行
