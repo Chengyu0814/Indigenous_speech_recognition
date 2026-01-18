@@ -77,7 +77,7 @@ def diatest_to_token(result , dialect): # 把羅馬拼音轉成中文token(陣�
     
 def token_to_sentence(sub_list): # 把中文token轉成句子
 
-    client = Groq(api_key="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")
+    client = Groq(api_key="GROQ_API_KEY")
     completion = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
         messages=[{"role": "user", 
